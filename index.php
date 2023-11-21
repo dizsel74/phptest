@@ -44,13 +44,28 @@
     </tr>
   </thead>
   <tbody class="table-group-divider">
-    <tr>
-      <th>1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    
+    <?php
+    include "connect.php";
+    $sql_query = "SELECT * FROM test";
+    $result = $conn->query($sql_query);
+
+    if(!$result){
+      die('Error in Query');
+    }
+    while($row=$result->fetch_assoc()){
+echo "
+      <tr>
+        <th>
+          <a class='btn btn-sucess' href='update.php?id=$row[id]'>Edit</a>
+          <a class='btn btn-danger' href='delete.php?id=$row[id]'>Delete</a>
+        </th>
+        <td>$row[requested_by]</td>
+        <td>$row[items]</td>
+        <td>$row[item_type]</td>
+      </tr>
+    "
+    }
+    ?>
   </tbody>
 </table>
 </div>
