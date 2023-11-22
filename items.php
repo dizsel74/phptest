@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <title>CRUD TEST</title>
+  <title>Items</title>
 </head>
 <body>
 
@@ -18,7 +18,10 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Add Request</a>
+              <a class="nav-link" aria-current="page" href="create.php">Add Request</a>
+        </li>
+        <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">items</a>
         </li>
         <li class="nav-item">
               <a class="nav-link" href="#">Sumary</a>
@@ -32,42 +35,43 @@
   </div>
 </nav>
 
+<div class="container">
 
-<div>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Action</th>
-      <th>User</th>
-      <th>Request Items</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody class="table-group-divider">
-    <?php
-    include "connect.php";
-    $sql_query = "SELECT * FROM `items` ";
-    $result = $conn->query($sql_query);
-
-    if(!$result){
-      die('Error in Query');
-    }
-    while($row=$result->fetch_assoc()){
-echo "
-      <tr>
-        <th>
-          <a class='btn btn-success' href='update.php?id=$row[id]'>Edit</a>
-          <a class='btn btn-danger' href='delete.php?id=$row[id]'>Delete</a>
-        </th>
+  <div class="col-sx-10 m-auto">
+    <table class="table text-center">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider">
+        <?php
+      include "connect.php";
+      $sql_query = "SELECT * FROM `items` ";
+      $result = $conn->query($sql_query);
+      
+      if(!$result){
+        die('Error in Query');
+      }
+      while($row=$result->fetch_assoc()){
+        echo "
+        <tr>
+        
         <td>$row[item]</td>
         <td>$row[item_type]</td>
-        
-      </tr>
-    ";
-    }
-    ?>
-  </tbody>
-</table>
+        <th>
+        <a class='btn btn-success' href='edit.php?id=$row[id]'>Edit</a>
+        <a class='btn btn-danger' href='delete.php?id=$row[id]'>Delete</a>
+        </th>
+        </tr>
+        ";
+      }
+      ?>
+    </tbody>
+   </table>
+  </div>
 </div>
 
 

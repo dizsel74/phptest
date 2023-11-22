@@ -9,7 +9,7 @@
         die("Connection failed: " . $conn->connect_error);
     }
 
-    echo "OK you are connected";
+   // echo "<div class='btn btn-success' href='#'>You are Connected</div>";
 
     // Perform your database operations here
 
