@@ -110,17 +110,13 @@
       
       alert('Btn clic');
       // Create a new select 
-      var newSelect = $("<select></select>");
-        newSelect.addClass("form-select");
+    
 
         // Add an initial option to the new select element
-        var defaultOption = $("<option></option>");
-        defaultOption.text("Please select an item");
-        defaultOption.val("");
-        newSelect.append(defaultOption);
+       
 
         // Add the new select element after the existing one
-        $("#items").after(newSelect);
+     
     });
   </script>
 
