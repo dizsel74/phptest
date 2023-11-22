@@ -46,7 +46,7 @@
   <tbody class="table-group-divider">
     <?php
     include "connect.php";
-    $sql_query = "SELECT * FROM test";
+    $sql_query = "SELECT * FROM `items` ";
     $result = $conn->query($sql_query);
 
     if(!$result){
@@ -56,14 +56,14 @@
 echo "
       <tr>
         <th>
-          <a class='btn btn-sucess' href='update.php?id=$row[id]'>Edit</a>
+          <a class='btn btn-success' href='update.php?id=$row[id]'>Edit</a>
           <a class='btn btn-danger' href='delete.php?id=$row[id]'>Delete</a>
         </th>
-        <td>$row[requested_by]</td>
-        <td>$row[items]</td>
+        <td>$row[item]</td>
         <td>$row[item_type]</td>
+        
       </tr>
-    "
+    ";
     }
     ?>
   </tbody>

@@ -14,6 +14,6 @@
     // Perform your database operations here
 
 
-    $conn->close();
+    //$conn->close();
 
 ?>
