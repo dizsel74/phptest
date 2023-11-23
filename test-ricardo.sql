@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-11-2023 a las 02:30:16
+-- Tiempo de generación: 23-11-2023 a las 02:21:01
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -61,8 +61,54 @@ CREATE TABLE `requests` (
   `requested_by` varchar(50) NOT NULL,
   `requested_on` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `ordered_on` datetime NOT NULL,
-  `items` int(11) NOT NULL
+  `items` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `requests`
+--
+
+INSERT INTO `requests` (`req_id`, `requested_by`, `requested_on`, `ordered_on`, `items`) VALUES
+(36, 'Arturo', '2023-11-23 00:26:07', '0000-00-00 00:00:00', '{1,1}'),
+(37, 'MArco', '2023-11-23 00:35:22', '0000-00-00 00:00:00', '{3,1}'),
+(38, 'Pancho', '2023-11-23 00:52:49', '0000-00-00 00:00:00', '{3,1}');
+
+--
+-- Disparadores `requests`
+--
+DELIMITER $$
+CREATE TRIGGER `update_summary_after_update` AFTER UPDATE ON `requests` FOR EACH ROW BEGIN
+    -- Eliminar los registros antiguos de la tabla summary relacionados con el registro actualizado
+    DELETE FROM summary WHERE req_id = OLD.req_id;
+
+    -- Insertar los nuevos datos actualizados en la tabla summary
+    INSERT INTO summary (req_id, requested_by, ordered_on, items)
+    VALUES (NEW.req_id, NEW.requested_by, NEW.ordered_on, NEW.items);
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `summary`
+--
+
+CREATE TABLE `summary` (
+  `req_id` int(11) NOT NULL DEFAULT 0,
+  `requested_by` varchar(50) NOT NULL,
+  `ordered_on` datetime NOT NULL,
+  `items` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `summary`
+--
+
+INSERT INTO `summary` (`req_id`, `requested_by`, `ordered_on`, `items`) VALUES
+(36, 'Arturo', '2023-11-22 19:19:31', '{1,1}'),
+(37, 'MArco', '2023-11-22 19:19:31', '{3,1}'),
+(38, 'Pancho', '2023-11-22 19:19:31', '{3,1}');
 
 --
 -- Índices para tablas volcadas
@@ -90,24 +136,13 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT de la tabla `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `requests`
---
-ALTER TABLE `requests`
-  ADD CONSTRAINT `Articulos_id` FOREIGN KEY (`items`) REFERENCES `items` (`id`),
-  ADD CONSTRAINT `Tipo_item_type` FOREIGN KEY (`items`) REFERENCES `items` (`item_type`);
+  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
