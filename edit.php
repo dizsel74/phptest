@@ -16,7 +16,7 @@
     $row = $result->fetch_assoc();
     //if no result found retur to page
     while(!$row){
-      header("location:phptest/items.php");
+      header("location:/phptest/items.php");
       exit;
     }
     //fill date fron table
@@ -32,7 +32,8 @@
 
     $sql = "UPDATE items SET item='$item', item_type='$item_type' WHERE id='$id'";
     $result = $conn->query($sql);
-    
+    header("location:/phptest/items.php");
+    exit;
   }
 
 ?>
@@ -65,7 +66,7 @@
           <a class="nav-link " href="items.php">items</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="summary.php">Sumary</a>
+          <a class="nav-link" href="summary.php">Summary</a>
         </li>
       </ul>
       <form class="d-flex" role="search">

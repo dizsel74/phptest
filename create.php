@@ -42,7 +42,7 @@
           <a class="nav-link " aria-current="page" href="items.php">items</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="summary.php">Sumary</a>
+          <a class="nav-link" href="summary.php">Summary</a>
         </li>
       </ul>
       <form class="d-flex" role="search">
@@ -76,16 +76,18 @@
               <option selected value="">Please select an Item</option>
               <?php
                 include "connect.php";
-                $sql_query = "SELECT `item`, `item_type` FROM `items`";
+                $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
                 $result = $conn->query($sql_query);
 
                 if(!$result){
                   die('Error in Query');
                 }
                 while($row=$result->fetch_assoc()){
-                  echo "
-                  <option value='$row[item_type]'>$row[item]</option>
-                  ";
+                  
+                  // Metodo de Serialización para unir el id y el item_type
+                  $serializedData = "{" . $row['id'] . "," . $row['item_type'] . "}";
+                  echo "<option value='$serializedData'>$row[item]</option>";
+                  
                 }
 
             ?>

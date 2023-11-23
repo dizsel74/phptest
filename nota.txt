@@ -1,0 +1,32 @@
+-- trigger para actualizar summary después de que se haga una actualización en requests
+DELIMITER //
+CREATE TRIGGER update_summary_after_update
+AFTER UPDATE ON requests
+FOR EACH ROW
+BEGIN
+    -- Eliminar datos de summary 
+    DELETE FROM summary WHERE req_id = OLD.req_id;
+
+    -- Inserta  nuevos datos en summary
+    INSERT INTO summary (req_id, requested_by, ordered_on, items)
+    VALUES (NEW.req_id, NEW.requested_by, NEW.ordered_on, NEW.items);
+END;
+//
+DELIMITER ;
+
+
+
+--- Hacer tabl summaryCREATE TABLE summary AS
+SELECT req_id, requested_by, ordered_on, items
+FROM requests;
+
+
+
+
+-- Eliminar la tabla summary si existe
+DROP TABLE IF EXISTS summary;
+
+-- Crear la tabla summary y seleccionar datos de requests
+CREATE TABLE summary AS
+SELECT req_id, requested_by, ordered_on, items
+FROM requests;

@@ -1,3 +1,9 @@
+<?php
+include "connect.php";
+
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +30,7 @@
           <a class="nav-link " aria-current="page" href="#">items</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page"href="summary.php">Sumary</a>
+          <a class="nav-link active" aria-current="page"href="summary.php">Summary</a>
         </li>
       </ul>
       <form class="d-flex" role="search">
@@ -40,16 +46,30 @@
   <div class="col-sx-10 m-auto">
     <table class="table text-center">
       <thead>
+        <tr><b>Today's Summary</b></tr>
         <tr>
-          <th>Item</th>
-          <th>Type</th>
-          <th>Actions</th>
+          <th>Id requeste</th>
+          <th>Requested by</th>
+          <th>Orden On </th>
+          <th>Items requested</th>
         </tr>
       </thead>
       <tbody class="table-group-divider">
         <?php
       include "connect.php";
-      $sql_query = "SELECT * FROM `items` ";
+
+
+      $sql_drop_summary = "DROP TABLE IF EXISTS summary";
+      $result_drop_table = $conn->query($sql_drop_sumary);
+
+    // Consulta para crear la tabla summary y seleccionar datos de requests
+        $sql_create_table = "
+          CREATE TABLE summary AS
+          SELECT req_id, requested_by, ordered_on, items
+          FROM requests";
+        $result_create_table = $conn->query($sql_create_table);
+
+      $sql_query = "SELECT * FROM `summary` ";
       $result = $conn->query($sql_query);
       
       if(!$result){
@@ -59,11 +79,12 @@
         echo "
         <tr>
         
-        <td>$row[item]</td>
-        <td>$row[item_type]</td>
+          <td>$row[req_id]</td>
+          <td>$row[requested_by]</td>
+          <td>$row[ordered_on]</td>
+          <td>$row[items]</td>
         <th>
-        <a class='btn btn-success' href='edit.php?id=$row[id]'>Edit</a>
-        <a class='btn btn-danger' href='delete.php?id=$row[id]'>Delete</a>
+        
         </th>
         </tr>
         ";
