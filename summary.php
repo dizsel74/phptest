@@ -1,9 +1,3 @@
-<?php
-include "connect.php";
-
-
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +21,7 @@ include "connect.php";
           <a class="nav-link"  href="create.php">Add Request</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " aria-current="page" href="#">items</a>
+          <a class="nav-link " aria-current="page" href="items.php">items</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page"href="summary.php">Summary</a>
@@ -59,15 +53,15 @@ include "connect.php";
       include "connect.php";
 
 
-      $sql_drop_summary = "DROP TABLE IF EXISTS summary";
-      $result_drop_table = $conn->query($sql_drop_sumary);
-
-    // Consulta para crear la tabla summary y seleccionar datos de requests
-        $sql_create_table = "
-          CREATE TABLE summary AS
-          SELECT req_id, requested_by, ordered_on, items
-          FROM requests";
-        $result_create_table = $conn->query($sql_create_table);
+      $q_drop_table = "DROP TABLE IF EXISTS summary";
+      $result_drop_table = $conn->query($q_drop_table);
+      
+      // Consulta para crear la tabla summary y seleccionar datos de requests y pone la fecha actual de consulta
+       $q_create_table = "
+        CREATE TABLE summary AS
+        SELECT req_id, requested_by, NOW() as ordered_on, items
+        FROM requests";
+        $result_create_table = $conn->query($q_create_table);
 
       $sql_query = "SELECT * FROM `summary` ";
       $result = $conn->query($sql_query);
