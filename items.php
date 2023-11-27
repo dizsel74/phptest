@@ -39,7 +39,8 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="index.php">Add Request</a>
+          <!-- <a class="nav-link" aria-current="page" href="index.php">Add Request</a> -->
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#requestPopup">Add Request</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">items</a>
@@ -141,7 +142,7 @@
   </div>
 </div>
 
-<!-- Summary Popup -->
+<!-- Summary Modal -->
 <div id="summaryPopup" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -160,18 +161,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                      <?php
+                        <?php
                         include "connect.php";
                 
-                        $q_drop_table = "DROP TABLE IF EXISTS summary";
-                        $result_drop_table = $conn->query($q_drop_table);
-                        
-                        // Consulta para crear la tabla summary y seleccionar datos de requests y pone la fecha actual de consulta
-                        $q_create_table = "
-                          CREATE TABLE summary AS
-                          SELECT req_id, requested_by, NOW() as ordered_on, items
-                          FROM requests";
-                          $result_create_table = $conn->query($q_create_table);
+                      $q_drop_table = "DROP TABLE IF EXISTS summary";
+                      $result_drop_table = $conn->query($q_drop_table);
+                      
+                      // Consulta para crear la tabla summary y seleccionar datos de requests y pone la fecha actual de consulta
+                      $q_create_table = "
+                        CREATE TABLE summary AS
+                        SELECT req_id, requested_by, NOW() as ordered_on, items
+                        FROM requests";
+                        $result_create_table = $conn->query($q_create_table);
+
 
                         $sql_query = "SELECT * FROM `summary` ";
                         $result = $conn->query($sql_query);
@@ -189,17 +191,69 @@
                             </tr>
                             ";
                         }
-                      ?>
+                        ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+<!-------------------------->
 
+<!-- request Popup -->
+<div id="requestPopup" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-dark">
+        <h5 class="modal-title text-white">Edit Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="request.php" name="requestForm">
+        <label> User Name: </label>
+            <input type="text" name="requested_by" class="form-control"> <br>
+        <label> Request Items: </label>
+            <select id="items" name="items" class="form-select"> 
+              <option selected value="">Please select an Item</option>
+              <?php
+               include "connect.php";
+                $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
+                $result = $conn->query($sql_query);
 
+                if(!$result){
+                  die('Error in Query');
+                }
+                while($row=$result->fetch_assoc()){
+            
+                  // Metodo de Serialización para unir el id y el item_type
+                  $serializedData = "{" . $row['id'] . "," . $row['item_type'] . "}";
+                  echo "<option value='$serializedData'>$row[item]</option>";
+                  
+                }
+
+            ?>
+            </select>
+            <!-- <p>
+             <button class="btn" id="add-field" > add more items</button>
+            </p> -->
+      
+            <br>
+
+          <a class="btn btn-info" type="button" name="cancel" data-bs-dismiss="modal"> Cancel </a>
+          <button class="btn btn-success" type="submit" name="submit"> Submit</button>
+          <br>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-------------------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-<script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI/tZ1i5VN1JzBp8A+qFBQjNpz7R1pJSktN1lOmE=" crossorigin="anonymous"></script>
+
+<script>//edit
   function showForm(id, item, item_type) {
     document.querySelector('#editPopup input[name="id"]').value = id;
     document.querySelector('#editPopup input[name="item"]').value = item;
@@ -211,7 +265,9 @@
 </script>
 </body>
 </html>
+<!--Edit / Update -->
 <?php
+
   include "connect.php";
 
   if($_SERVER["REQUEST_METHOD"]=='GET'){
@@ -239,7 +295,7 @@
     $result = $conn->query($sql);
      //If Update refresh page
     if ($sql) {
-      echo "<script>alert('All right request submitted!');
+      echo "<script>alert('UPDATE submitted!');
       window.location.href = '/phptest/items.php';</script>";
       exit;
     }
@@ -247,3 +303,5 @@
   }
   $conn->close();
   ?>
+
+  <!-- request -->

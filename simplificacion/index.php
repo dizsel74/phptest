@@ -5,7 +5,7 @@
 
 
   if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
+      die("No Connection: " . $conn->connect_error);
   }
   if(isset($_POST['submit'])){
     $requested_by = $_POST['requested_by'];
@@ -46,9 +46,6 @@
         </li>
         <li class="nav-item">
           <a class="nav-link " aria-current="page" href="items.php">items</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="summary.php">Summary</a>
         </li>
       </ul>
       <form class="d-flex" role="search">
