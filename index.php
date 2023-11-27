@@ -1,11 +1,5 @@
 <?php
-  //include "connect.php";
-
-  $servername = "localhost"; // Server
-  $username = "root"; //  MySQL username
-  $password = ""; // MySQL pwd
-  $database = "test-ricardo"; // tes-ricardo o test  DB name
-
+  include "connect.php";
 
   $conn = new mysqli($servername, $username, $password, $database);
 
@@ -87,7 +81,7 @@
             <select id="items" name="items" class="form-select"> 
               <option selected value="">Please select an Item</option>
               <?php
-               //include "connect.php";
+               include "connect.php";
                 $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
                 $result = $conn->query($sql_query);
 
