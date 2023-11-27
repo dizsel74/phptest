@@ -45,7 +45,8 @@
           <a class="nav-link active" aria-current="page" href="#">items</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="summary.php">Summary</a>
+          <!-- <a class="nav-link" href="summary.php">Summary</a> -->
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#summaryPopup">Summary</a>
         </li>
       </ul>
       <form class="d-flex" role="search">
@@ -103,16 +104,16 @@
       </div>
       <div class="modal-body">
         <form method="post" action="">
-          <input type="hidden" name="id" class="form-control" 
-            value="<?php echo $id; ?>"> 
+          <input type="hidden" name="id" class="form-control"
+            value="<?php echo $id; ?>">
 
             <label> Item: </label>
-            <input type="text" name="item" class="form-control" 
+            <input type="text" name="item" class="form-control"
             value="<?php echo $item;?>"><br>
           <label> Item type:</label>
-          <select id="item_type" name="item_type" class="form-select" > 
-              <option selected value="<?php echo $item_type;?>"> 
-              <?php 
+          <select id="item_type" name="item_type" class="form-select" >
+              <option selected value="<?php echo $item_type;?>">
+              <?php
                 if($item_type =='1'){
                   echo"Office Supply";
                 }
@@ -126,10 +127,10 @@
               </option>
               <option value="1">Office Supply</option>
               <option value="2">Equipment</option>
-              <option value="3">Furniture</option>    
+              <option value="3">Furniture</option>
             </select>
-           
-            <br> 
+
+            <br>
 
           <a class="btn btn-info" type="button" name="cancel" data-bs-dismiss="modal"> Cancel </a>
           <button class="btn btn-success" type="submit" name="submit"> Submit</button>
@@ -139,6 +140,63 @@
     </div>
   </div>
 </div>
+
+<!-- Summary Popup -->
+<div id="summaryPopup" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title text-white">Today's Summary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>Id request</th>
+                            <th>Requested by</th>
+                            <th>Ordered On</th>
+                            <th>Items requested</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                        include "connect.php";
+                
+                        $q_drop_table = "DROP TABLE IF EXISTS summary";
+                        $result_drop_table = $conn->query($q_drop_table);
+                        
+                        // Consulta para crear la tabla summary y seleccionar datos de requests y pone la fecha actual de consulta
+                        $q_create_table = "
+                          CREATE TABLE summary AS
+                          SELECT req_id, requested_by, NOW() as ordered_on, items
+                          FROM requests";
+                          $result_create_table = $conn->query($q_create_table);
+
+                        $sql_query = "SELECT * FROM `summary` ";
+                        $result = $conn->query($sql_query);
+
+                        if (!$result) {
+                            die('Error in Query');
+                        }
+                        while ($row = $result->fetch_assoc()) {
+                            echo "
+                            <tr>
+                                <td>$row[req_id]</td>
+                                <td>$row[requested_by]</td>
+                                <td>$row[ordered_on]</td>
+                                <td>$row[items]</td>
+                            </tr>
+                            ";
+                        }
+                      ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script>
@@ -155,12 +213,12 @@
 </html>
 <?php
   include "connect.php";
-  
+
   if($_SERVER["REQUEST_METHOD"]=='GET'){
     if(!isset($_GET['id'])){
       exit;
     }
-  
+
     $id = $_GET['id'];
     $sql = "SELECT 'id','item','item_type' FROM items WHERE id=$id";
     $result = $conn->query($sql);
@@ -169,7 +227,7 @@
     $id=$row["id"];
     $item=$row["item"];
     $item_type=$row["item_type"];
-   
+
   }
  else{
     //UPDATE
@@ -185,7 +243,7 @@
       window.location.href = '/phptest/items.php';</script>";
       exit;
     }
-   
+
   }
   $conn->close();
   ?>
