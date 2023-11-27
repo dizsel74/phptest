@@ -18,7 +18,7 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link"  href="create.php">Add Request</a>
+          <a class="nav-link"  href="index.php">Add Request</a>
         </li>
         <li class="nav-item">
           <a class="nav-link " aria-current="page" href="items.php">items</a>

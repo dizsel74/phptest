@@ -3,7 +3,7 @@
   $id="";
   $item="";
   $item_type="";
-  //if no id retrive go to items page
+  //if no id  go to items page
   if($_SERVER["REQUEST_METHOD"]=='GET'){
     if(!isset($_GET['id'])){
       header("location:phptest/items.php");
@@ -14,12 +14,12 @@
     $sql = "SELECT * FROM items WHERE id=$id";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    //if no result found retur to page
+    //if no result found return to page
     while(!$row){
       header("location:/phptest/items.php");
       exit;
     }
-    //fill date fron table
+    //fill date fronm table
     $id=$row["id"];
     $item=$row["item"];
     $item_type=$row["item_type"];
@@ -35,7 +35,7 @@
     header("location:/phptest/items.php");
     exit;
   }
-
+  $conn->close();
 ?>
 
 
@@ -60,7 +60,7 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link "  href="create.php">Add Request</a>
+          <a class="nav-link "  href="index.php">Add Request</a>
         </li>
         <li class="nav-item">
           <a class="nav-link " href="items.php">items</a>
@@ -78,9 +78,8 @@
 </nav>
 
 
-<div class="col-lg-6 m-auto">
-    
-    <form method="post">
+<div class="col-lg-6 m-auto">  
+  <form method="post">
       <br><br>
       <div class="card">
         
@@ -91,7 +90,6 @@
         <br>
         <div style="padding: 0 3rem 1rem;">
             
-          
             <input type="hidden" name="id" class="form-control" 
             value="<?php echo $id; ?>"> 
 
@@ -121,14 +119,15 @@
               <option value="3">Furniture</option>    
             </select>
            
-<br> 
+            <br> 
 
             <a class="btn btn-info" type="submit" name="cancel" href="items.php"> Cancel </a>
-            <button class="btn btn-success" type="submit" name="submit"> Submit</button><br>
+            <button class="btn btn-success" type="submit" name="submit"> Submit</button>
+            <br>
       </div>
       </div>
     </form>
-  </div>
+</div>
 
 
 

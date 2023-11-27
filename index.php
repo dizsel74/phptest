@@ -1,6 +1,18 @@
 <?php
-  include "connect.php";
+  //include "connect.php";
 
+  $servername = "localhost"; // Server
+  $username = "root"; //  MySQL username
+  $password = ""; // MySQL pwd
+  $database = "test-ricardo"; // tes-ricardo o test  DB name
+
+
+  $conn = new mysqli($servername, $username, $password, $database);
+
+
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
   if(isset($_POST['submit'])){
     $requested_by = $_POST['requested_by'];
     $items = $_POST['items'];
@@ -75,7 +87,7 @@
             <select id="items" name="items" class="form-select"> 
               <option selected value="">Please select an Item</option>
               <?php
-                include "connect.php";
+               //include "connect.php";
                 $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
                 $result = $conn->query($sql_query);
 
@@ -83,7 +95,7 @@
                   die('Error in Query');
                 }
                 while($row=$result->fetch_assoc()){
-                  
+            
                   // Metodo de Serialización para unir el id y el item_type
                   $serializedData = "{" . $row['id'] . "," . $row['item_type'] . "}";
                   echo "<option value='$serializedData'>$row[item]</option>";
