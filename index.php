@@ -110,10 +110,7 @@
             <label> *Item: </label>
             <input type="text" name="item" class="form-control"
             value="<?php echo $item;?>"><br>
-          <label> Item type:</label>
-          <select id="item_type" name="item_type" class="form-select" >
-              <option selected value="<?php echo $item_type;?>">
-              <?php
+          <label> Item type:  <?php
                 if($item_type =='1'){
                   echo"Office Supply";
                 }
@@ -123,8 +120,9 @@
                 else{
                   echo"Furniture";
                 }
-              ?>
-              </option>
+              ?></label>
+          <select id="item_type" name="item_type" class="form-select" >
+              
               <option value="1">Office Supply</option>
               <option value="2">Equipment</option>
               <option value="3">Furniture</option>
@@ -207,7 +205,7 @@
         <button type="button" class="btn-close btn btn-outline-success" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="post" action="request.php" name="requestForm" onsubmit="return validateRequestForm()">
+        <form method="post" action="" name="requestForm" onsubmit="return validateRequestForm()">
         <label> *User Name: </label>
             <input type="text" name="requested_by" class="form-control"> <br>
         <label> *Request Items: </label>
@@ -231,22 +229,34 @@
 
             ?>
             </select>
-            <!-- <p>
-             <button class="btn" id="add-field" > add more items</button>
-            </p> -->
+            <br>
+            <div id="moreItems"></div>
+            <p>
+              <button class="btn" id="add-field" type="button" onclick="addMoreItems()">Add more items</button>
+            </p>
 
             <br>
 
           <a class="btn btn-info" type="button" name="cancel" data-bs-dismiss="modal"> Cancel </a>
           <button class="btn btn-success" type="submit" name="submit"> Submit</button>
           <br>
+           
         </form>
       </div>
     </div>
   </div>
 </div>
 
+<script>
+  var itemCount = 1; // rastrear número de campos extras
 
+  function addMoreItems() {
+    itemCount++; 
+    var selectClone = document.getElementById("items").cloneNode(true); 
+    selectClone.name = "items" + itemCount; 
+    document.getElementById("moreItems").appendChild(selectClone); 
+  }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI/tZ1i5VN1JzBp8A+qFBQjNpz7R1pJSktN1lOmE=" crossorigin="anonymous"></script>
@@ -290,6 +300,32 @@ function search() {
 }
 
 </script>
+
+<?php
+  include "connect.php";
+
+  if(isset($_POST['submit'])){
+    $requested_by = isset($_POST['requested_by']) ? $_POST['requested_by'] : '';
+    $items = isset($_POST['items']) ? $_POST['items'] : '';
+   
+      if (!empty($requested_by)){
+      $q = " INSERT INTO `requests`(`requested_by`, `items` ) VALUES ( '$requested_by', '$items' )";
+
+      $query = mysqli_query($conn,$q);
+
+      if ($query) {
+        echo "<script>
+              alert('All right request submitted!'); 
+              window.location.href = '/phptest/index.php';
+              </script>";
+              exit;
+      } else {
+        echo "<script>alert('UPS error submitting request:" . mysqli_error($conn) . "');</script>";
+      }
+    } 
+}
+$conn->close();
+?>
 </body>
 </html>
 <!--Edit / Update -->
