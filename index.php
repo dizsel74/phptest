@@ -273,25 +273,22 @@
     return true;
   }
 
-</script>
 
-<script>
 function search() {
-    var searchFor = document.getElementById("searchInput").value;
-console.log(searchFor);
-    // Example: hide all rows that do not contain the search term
+    var searchFor = document.getElementById("searchInput").value.toLowerCase();
     var rows = document.querySelectorAll('#itemsTable tbody tr');
     for (var i = 0; i < rows.length; i++) {
-        var textContent = rows[i].textContent || rows[i].innerText;
-        if (textContent.toUpperCase().includes(searchFor)) {
+        var textContent = (rows[i].textContent || rows[i].innerText).toLowerCase();
+        if (textContent.includes(searchFor)) {
             rows[i].style.display = "";
         } else {
             rows[i].style.display = "none";
         }
     }
 
-    return false; // Prevent form submission
+    return false; 
 }
+
 </script>
 </body>
 </html>
@@ -326,7 +323,7 @@ console.log(searchFor);
      //If Update refresh page
     if ($sql) {
       echo "<script>alert('UPDATE submitted!');
-      window.location.href = '/phptest/index.php';</script>";
+      window.location.href = '/phptest/index.php';</scrip>";
       exit;
     }
   } else {
