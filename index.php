@@ -1,6 +1,23 @@
 <?php
-  include "connect.php";
-    //  Inicialize variables for edit
+//Fore best practices this part soud be in a separated file credentials.php
+//anbd be included like so include 'credentials.php';
+
+    $servername = "localhost"; // Server
+    $username = "root"; //  MySQL username
+    $password = ""; // MySQL pwd
+    $database = "test-ricardo"; // tes-ricardo o test  DB name
+
+
+    $conn = new mysqli($servername, $username, $password, $database);
+
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+?>
+<?php
+ 
     $id = "";
     $item = "";
     $item_type = "";
@@ -11,13 +28,13 @@
           $sql = "DELETE FROM `items` WHERE id=$id";
           $conn->query($sql);
           if ($conn->affected_rows > 0) {
-              header('location:/phptest/index.php');
+              echo "<script>alert('Item Deleted!'); window.location.href = '/phptest/index.php';</script>";
               exit;
           } else {
               echo "Error deleting item: " . $conn->error;
           }
       }
-      $conn->close();
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,7 +87,7 @@
       </thead>
       <tbody class="table-group-divider">
         <?php
-        include "connect.php";
+       
         $sql_query = "SELECT * FROM `items` ";
         $result = $conn->query($sql_query);
         if(!$result){
@@ -88,7 +105,7 @@
           </tr>
           ";
         }
-        $conn->close();?>
+      ?>
     </tbody>
    </table>
   </div>
@@ -206,41 +223,42 @@
       </div>
       <div class="modal-body">
         <form method="post" action="" name="requestForm" onsubmit="return validateRequestForm()">
-        <label> *User Name: </label>
-            <input type="text" name="requested_by" class="form-control"> <br>
-        <label> *Request Items: </label>
+          <label> *User Name: </label>
+          <input type="text" name="requested_by" class="form-control"> <br>
+          <label> *Request Items: </label>
+          <div id="itemFields">
             <select id="items" name="items" class="form-select">
               <option selected value="">Please select an Item</option>
               <?php
-               include "connect.php";
-                $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
-                $result = $conn->query($sql_query);
+              
+              $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
+              $result = $conn->query($sql_query);
 
-                if(!$result){
-                  die('Error in Query');
-                }
-                while($row=$result->fetch_assoc()){
-
-                  // Serialización para unir el id y el item_type
-                  $serializedData = "{" . $row['id'] . "," . $row['item_type'] . "}";
-                  echo "<option value='$serializedData'>$row[item]</option>";
-
-                }
-
-            ?>
+              if(!$result){
+                die('Error in Query');
+              }
+              while($row=$result->fetch_assoc()){
+                $serializedData = "{" . $row['id'] . "," . $row['item_type'] . "}";
+                echo "<option value='$serializedData'>$row[item]</option>";
+              }
+              ?>
             </select>
-            <br>
-            <div id="moreItems"></div>
-            <p>
-              <button class="btn" id="add-field" type="button" onclick="addMoreItems()">Add more items</button>
-            </p>
+          </div>
 
-            <br>
+          <br>
+
+          <div id="moreItems"></div>
+          <p>
+            <button class="btn" id="add-field" type="button" onclick="addMoreItems()">Add more items</button>
+          </p>
+
+          <br>
 
           <a class="btn btn-info" type="button" name="cancel" data-bs-dismiss="modal"> Cancel </a>
           <button class="btn btn-success" type="submit" name="submit"> Submit</button>
+          
           <br>
-           
+
         </form>
       </div>
     </div>
@@ -248,15 +266,50 @@
 </div>
 
 <script>
-  var itemCount = 1; // rastrear número de campos extras
+
+  var itemCount = 1; 
 
   function addMoreItems() {
-    itemCount++; 
-    var selectClone = document.getElementById("items").cloneNode(true); 
-    selectClone.name = "items" + itemCount; 
-    document.getElementById("moreItems").appendChild(selectClone); 
+      itemCount++;
+      
+      // Clone 
+      var originalSelect = document.getElementById("items");
+      var selectClone = originalSelect.cloneNode(true);
+
+      // Set a unique name for each select 
+      selectClone.name = "items[]";
+      selectClone.id = "items" + itemCount;
+
+      // Create a remove button 
+      var removeButton = document.createElement("button");
+      removeButton.textContent = "Remove";
+      removeButton.type = "button";
+      removeButton.className = "btn btn-danger";
+      removeButton.onclick = function() { removeItem(selectClone); };
+
+      // Create div
+      var containerDiv = document.createElement("div");
+      containerDiv.className = "mb-3";
+      containerDiv.appendChild(selectClone);
+      containerDiv.appendChild(removeButton);
+
+      document.getElementById("moreItems").appendChild(containerDiv);
   }
+
+  function removeItem(selectClone) {
+     
+      if (itemCount > 1) {
+          
+          var container = document.getElementById("moreItems");
+          container.removeChild(selectClone.parentNode);
+          itemCount--;
+      }
+  }
+
+
 </script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI/tZ1i5VN1JzBp8A+qFBQjNpz7R1pJSktN1lOmE=" crossorigin="anonymous"></script>
@@ -271,19 +324,32 @@
     var myModal = new bootstrap.Modal(document.getElementById('editPopup'));
     myModal.show();
   }
-//Validate no empty request
-  function validateRequestForm() {
+
+/////    Validate  request
+function validateRequestForm() {
     var name = document.forms["requestForm"]["requested_by"].value;
-    var selectedItems = document.forms["requestForm"]["items"].value;
+    var selectedItems = document.getElementsByName("items[]");
+    var isValid = true;
 
     if (name.trim() === '' || selectedItems.trim() === '') {
-      alert('Complete all fields with a *');
-      return false;
+        alert('Complete the field with a * ');
+        isValid = false;
     }
-    return true;
-  }
+    
+
+    for (var i = 0; i < selectedItems.length; i++) {
+        if (selectedItems[i].value.trim() === '') {
+            alert('Complete all fields with a * for Item selection');
+            isValid = false;
+            break;
+        }
+    }
+
+    return isValid;
+}
 
 
+//search
 function search() {
     var searchFor = document.getElementById("searchInput").value.toLowerCase();
     var rows = document.querySelectorAll('#itemsTable tbody tr');
@@ -302,36 +368,31 @@ function search() {
 </script>
 
 <?php
-  include "connect.php";
-
   if(isset($_POST['submit'])){
     $requested_by = isset($_POST['requested_by']) ? $_POST['requested_by'] : '';
     $items = isset($_POST['items']) ? $_POST['items'] : '';
    
       if (!empty($requested_by)){
-      $q = " INSERT INTO `requests`(`requested_by`, `items` ) VALUES ( '$requested_by', '$items' )";
+      $q = " INSERT INTO  requests (`requested_by`, `items` ) VALUES ( '$requested_by', '$items' )";
 
       $query = mysqli_query($conn,$q);
 
       if ($query) {
-        echo "<script>
-              alert('All right request submitted!'); 
-              window.location.href = '/phptest/index.php';
-              </script>";
-              exit;
+        echo "<script>alert('All right request submitted!');  window.location.href = '/phptest/index.php';</script>";
+        exit;
       } else {
-        echo "<script>alert('UPS error submitting request:" . mysqli_error($conn) . "');</script>";
+          echo "<script>alert('UPS error submitting request:" . mysqli_error($conn) . "');</script>";
       }
-    } 
+    } else {
+      echo "<script>alert('Complete all fields');</script>";
+    }
 }
-$conn->close();
 ?>
 </body>
 </html>
 <!--Edit / Update -->
 <?php
 
-  include "connect.php";
 
   if($_SERVER["REQUEST_METHOD"]=='GET'){
     if(!isset($_GET['id'])){
@@ -356,10 +417,12 @@ $conn->close();
     if (!empty($item)) {
     $sql = "UPDATE items SET item='$item', item_type='$item_type' WHERE id='$id'";
     $result = $conn->query($sql);
+
      //If Update refresh page
     if ($sql) {
-      echo "<script>alert('UPDATE submitted!');
-      window.location.href = '/phptest/index.php';</scrip>";
+      echo "<script>alert('UPDATE submitted!');window.location.href = '/phptest/index.php';</script>";
+      header('location:/phptest/index.php');
+     
       exit;
     }
   } else {
@@ -367,7 +430,7 @@ $conn->close();
   }
 
   }
-  $conn->close();
+
   ?>
 
 
