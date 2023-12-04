@@ -17,7 +17,8 @@
 
 ?>
 <?php
- 
+  //include "connect.php";
+    //  Inicialize variables for edit
     $id = "";
     $item = "";
     $item_type = "";
@@ -34,7 +35,7 @@
               echo "Error deleting item: " . $conn->error;
           }
       }
-    
+     // $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,8 +44,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <title>View Items</title>
-  <link rel="stylesheet" type="text/css" href="/style.css">
-  <script src="scripts.js"></script>
 </head>
 
 <body>
@@ -89,7 +88,7 @@
       </thead>
       <tbody class="table-group-divider">
         <?php
-       
+        //include "connect.php";
         $sql_query = "SELECT * FROM `items` ";
         $result = $conn->query($sql_query);
         if(!$result){
@@ -107,7 +106,7 @@
           </tr>
           ";
         }
-      ?>
+       // $conn->close();?>
     </tbody>
    </table>
   </div>
@@ -178,7 +177,8 @@
                     </thead>
                     <tbody>
                         <?php
-                
+                        //include "connect.php";
+
                       $q_drop_table = "DROP TABLE IF EXISTS summary";
                       $result_drop_table = $conn->query($q_drop_table);
 
@@ -231,7 +231,7 @@
             <select id="items" name="items" class="form-select">
               <option selected value="">Please select an Item</option>
               <?php
-              
+              // include "connect.php";
               $sql_query = "SELECT `id`,`item`, `item_type` FROM `items`";
               $result = $conn->query($sql_query);
 
@@ -268,7 +268,53 @@
 
 <script>
 
-  
+  var itemCount = 1; // track the number of fields
+
+  function addMoreItems() {
+      itemCount++;
+      
+      // Clone the original select element
+      var originalSelect = document.getElementById("items");
+      var selectClone = originalSelect.cloneNode(true);
+
+      // Set a unique name for each cloned select element using an array syntax
+      selectClone.name = "items[]";
+
+      // Give a unique id to each clone
+      selectClone.id = "items" + itemCount;
+
+      // Create a remove button for each cloned select
+      var removeButton = document.createElement("button");
+      removeButton.textContent = "Remove";
+      removeButton.type = "button";
+      removeButton.className = "btn btn-danger";
+      removeButton.onclick = function() { removeItem(selectClone); };
+
+      // Create a div to hold both the select and remove button
+      var containerDiv = document.createElement("div");
+      containerDiv.className = "mb-3";
+      containerDiv.appendChild(selectClone);
+      containerDiv.appendChild(removeButton);
+
+      // Append the container div to the moreItems container
+      document.getElementById("moreItems").appendChild(containerDiv);
+  }
+
+  function removeItem(selectClone) {
+      // Ensure that there is at least one item select
+      if (itemCount > 1) {
+          // Get the container element
+          var container = document.getElementById("moreItems");
+
+          // Remove the container div that holds both the select and remove button
+          container.removeChild(selectClone.parentNode);
+
+          // Decrease the item count
+          itemCount--;
+      }
+  }
+
+
 </script>
 
 
@@ -277,6 +323,55 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI/tZ1i5VN1JzBp8A+qFBQjNpz7R1pJSktN1lOmE=" crossorigin="anonymous"></script>
 
 <script>
+//edit
+  function showForm(id, item, item_type) {
+    document.querySelector('#editPopup input[name="id"]').value = id;
+    document.querySelector('#editPopup input[name="item"]').value = item;
+    document.querySelector('#editPopup select[name="item_type"]').value = item_type;
+
+    var myModal = new bootstrap.Modal(document.getElementById('editPopup'));
+    myModal.show();
+  }
+
+/////    Validate  request
+function validateRequestForm() {
+    var name = document.forms["requestForm"]["requested_by"].value;
+    var selectedItems = document.getElementsByName("items[]");
+    var isValid = true;
+
+    if (name.trim() === '' || selectedItems.trim() === '') {
+        alert('Complete the field with a * ');
+        isValid = false;
+    }
+    
+
+    for (var i = 0; i < selectedItems.length; i++) {
+        if (selectedItems[i].value.trim() === '') {
+            alert('Complete all fields with a * for Item selection');
+            isValid = false;
+            break;
+        }
+    }
+
+    return isValid;
+}
+
+
+//search
+function search() {
+    var searchFor = document.getElementById("searchInput").value.toLowerCase();
+    var rows = document.querySelectorAll('#itemsTable tbody tr');
+    for (var i = 0; i < rows.length; i++) {
+        var textContent = (rows[i].textContent || rows[i].innerText).toLowerCase();
+        if (textContent.includes(searchFor)) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+
+    return false; 
+}
 
 </script>
 
@@ -296,7 +391,9 @@
       } else {
           echo "<script>alert('UPS error submitting request:" . mysqli_error($conn) . "');</script>";
       }
-    } 
+    } else {
+      echo "<script>alert('Complete all fields');</script>";
+    }
 }
 ?>
 </body>
@@ -304,6 +401,7 @@
 <!--Edit / Update -->
 <?php
 
+//  include "connect.php";
 
   if($_SERVER["REQUEST_METHOD"]=='GET'){
     if(!isset($_GET['id'])){
@@ -328,7 +426,6 @@
     if (!empty($item)) {
     $sql = "UPDATE items SET item='$item', item_type='$item_type' WHERE id='$id'";
     $result = $conn->query($sql);
-
      //If Update refresh page
     if ($sql) {
       echo "<script>alert('UPDATE submitted!');window.location.href = '/phptest/index.php';</script>";
@@ -341,7 +438,7 @@
   }
 
   }
-
+ // $conn->close();
   ?>
 
 
