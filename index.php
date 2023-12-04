@@ -129,7 +129,8 @@
             <label> *Item: </label>
             <input type="text" name="item" class="form-control"
             value="<?php echo $item;?>"><br>
-          <label> Item type:  <?php
+            <label> *Item type: </label>
+          <!-- <label> Item type:  <?php 
                 if($item_type =='1'){
                   echo"Office Supply";
                 }
@@ -139,7 +140,8 @@
                 else{
                   echo"Furniture";
                 }
-              ?></label>
+              ?>
+              </label> -->
           <select id="item_type" name="item_type" class="form-select" >
               
               <option value="1">Office Supply</option>
@@ -248,10 +250,10 @@
 
           <br>
 
-          <div id="moreItems"></div>
+          <!-- <div id="moreItems"></div>
           <p>
             <button class="btn" id="add-field" type="button" onclick="addMoreItems()">Add more items</button>
-          </p>
+          </p> -->
 
           <br>
 
